@@ -3,15 +3,13 @@ import { AppRouter } from './presentation/routes';
 import { Server } from './presentation/server';
 import { envs } from './config';
 
-
-(async() => {
+(async () => {
   await main();
 })();
 
 async function main() {
-
   await MongoDatabase.connect({
-    mongoUri: envs.MONGO_URI,
+    mongoUri: envs.MONGO_URL,
     dbName: envs.MONGO_DB_NAME,
   });
 
@@ -21,5 +19,4 @@ async function main() {
   });
 
   await server.start();
-
 }
