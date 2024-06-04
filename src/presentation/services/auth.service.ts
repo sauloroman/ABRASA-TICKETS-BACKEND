@@ -309,7 +309,7 @@ export class AuthService {
             <h1 style="text-align: center;">Confirma tu correo electrónico</h1>
             <p style="text-align: center;">Comienza a utilizar nuestra aplicación. Presiona el siguiente botón e ingresa el código de verificación.</p>
             <h2 style="text-align: center;">Tu código: ${code}</h2>
-            <a style="background-color: #623637; text-decoration: none; color: #fff; width: 100%; display: inline-block; padding: 10px; text-align: center;" href="https://abrasa-tickets.netlify.app/auth/confirm/${token}/${email}">Presiona aqui</a>
+            <a style="background-color: #623637; text-decoration: none; color: #fff; width: 100%; display: inline-block; padding: 10px; text-align: center;" href="http://localhost:5173/auth/confirm/${token}/${email}">Presiona aqui</a>
           </div>
           ${bottomEmail}
         </div>
@@ -355,7 +355,7 @@ export class AuthService {
           <p>Para cambiar tu contraseña en <span style="font-weight: bold;">ABRASA</span> debes presionar el siguiente boton</p>  
           <a 
           style="background-color: #623637; text-decoration: none; color: #fff; width: 100%; display: inline-block; padding: 10px; text-align: center;" 
-          href="https://abrasa-tickets.netlify.app/auth/password/new-password/${token}">Ir a cambiar</a>
+          href="http://localhost:5173/auth/password/new-password/${token}">Ir a cambiar</a>
           <p>Si no solicitaste el cambio de contraseña ignora este correo.</p>
         </div>
         ${bottomEmail}
