@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Confirmation &mdash; Abrasa</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --color-text: #27262a;
+        --main-color: #623637;
+        --main-color-shade: #311b1c;
+        --color-light: #f2e3d5;
+      }
+
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: inherit;
+      }
+
+      html {
+        font-size: 62.5%;
+      }
+
+      body {
+        height: 100vh;
+        box-sizing: border-box;
+        font-size: 1.6rem;
+        font-family: 'Montserrat', sans-serif;
+        color: var(--color-text);
+        line-height: 1.8;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        color: var(--main-color-shade);
+        font-family: 'Playfair Display', serif;
+      }
+
+      .container {
+        margin: 0 auto;
+        width: 120rem;
+        max-width: 95%;
+      }
+
+      .flex-center {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      /* ######################################## */
+      /* CONFIRMATION */
+      /* ######################################## */
+
+      .confirmation {
+        width: 100%;
+        height: 100vh;
+      }
+
+      .confirmation__header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .confirmation__header img {
+        width: 40rem;
+      }
+
+      .confirmation__content {
+        padding: 2rem;
+        border-radius: 5px;
+        width: 70%;
+        margin: 0 auto;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+
+      .confirmation__title {
+        display: inline-block;
+        padding-bottom: 2px;
+        border-bottom: 1px solid currentColor;
+      }
+
+      .confirmation__buttonBox {
+        margin: 2rem 0;
+        display: flex;
+        justify-content: center;
+      }
+
+      .confirmation__button {
+        text-decoration: none;
+        width: 25rem;
+        display: inline-block;
+        background-color: var(--main-color);
+        color: #fff;
+        padding: 1rem;
+        font-weight: 600;
+      }
+
+      .confirmation__footer {
+        margin-top: 4.8rem;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body class="container">
+    <div class="confirmation flex-center">
+      <header class="confirmation__header">
+        <figure class="confirmation__figure">
+          <img
+            src="https://res.cloudinary.com/dlamufioy/image/upload/v1710696746/file-upload/abrasa/qzfyl3mt6hx8frkbfb0c.png"
+            alt="Abrasa Logo"
+          />
+        </figure>
+      </header>
+      <div class="confirmation__content">
+        <h1 class="confirmation__title">Confirmación de Correo Lista</h1>
+        <p class="confirmation__text">
+          Tu cuenta ha quedado activa. Ya puedes comenzar a crear eventos y
+          boletos en la aplicación. Gracias por formar parte de la familia
+          Abrasa.
+        </p>
+
+        <div class="confirmation__buttonBox">
+          <a
+            class="confirmation__button"
+            href="http://localhost:5173"
+            target="_blank"
+            >Abrir Abrasa</a
+          >
+        </div>
+      </div>
+      <footer class="confirmation__footer">
+        <p>Todos los derechos reservados &copy; 2024</p>
+      </footer>
+    </div>
+  </body>
+</html>
