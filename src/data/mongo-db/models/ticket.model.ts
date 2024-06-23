@@ -32,6 +32,10 @@ const TicketSchema = new mongoose.Schema({
     required: [ true, 'Key Pass required'],
   },
 
+  table: {
+    type: Number,
+  },
+
   isActive: {
     type: Boolean,
     default: true,

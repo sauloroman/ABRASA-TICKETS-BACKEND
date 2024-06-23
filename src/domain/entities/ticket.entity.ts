@@ -13,6 +13,7 @@ export class TicketEntity {
     public isActive: boolean,
     public event: string,
     public user: string,
+    public table?: number,
   ){}
 
   public static fromObject( ticketObj: {[key: string]: any}): TicketEntity {
@@ -28,6 +29,7 @@ export class TicketEntity {
       isActive,
       event,
       user,
+      table,
     } = ticketObj;
 
     if ( !id && !_id ) throw CustomError.badRequest('Missing id');
@@ -48,7 +50,8 @@ export class TicketEntity {
       keyPass,
       isActive,
       event,
-      user
+      user,
+      table
     );
 
   }

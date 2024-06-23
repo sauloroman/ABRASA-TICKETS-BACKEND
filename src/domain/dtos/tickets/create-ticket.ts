@@ -4,13 +4,14 @@ export class CreateTicketDto {
     public readonly event: string,
     public readonly phone: string,
     public readonly adultsQuantity?: number,
-    public readonly kidsQuantity?: number
+    public readonly kidsQuantity?: number,
+    public table?: number,
   ) {}
 
   public static create(obj: {
     [key: string]: any;
   }): [string?, CreateTicketDto?] {
-    const { name, event, phone, adultsQuantity = 0, kidsQuantity = 0 } = obj;
+    const { name, event, phone, adultsQuantity = 0, kidsQuantity = 0, table = -1 } = obj;
 
     if (!name) return ['Missing name ticket', undefined];
     if (!phone) return ['Missing phone ticket', undefined];
@@ -18,7 +19,7 @@ export class CreateTicketDto {
 
     return [
       undefined,
-      new CreateTicketDto(name, event, phone, adultsQuantity, kidsQuantity),
+      new CreateTicketDto(name, event, phone, adultsQuantity, kidsQuantity, table),
     ];
   }
 }
