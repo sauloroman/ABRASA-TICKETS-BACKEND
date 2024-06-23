@@ -102,7 +102,9 @@ export class TicketsService {
       .skip((page - 1) * limit)
       .limit(limit);
 
-    const ticketsEntity = ticketsOfEvent.map(TicketEntity.fromObject);
+    console.log(ticketsOfEvent)
+
+    // const ticketsEntity = ticketsOfEvent.map(TicketEntity.fromObject);
 
     const adultsQuantity = allTicketsOfEvent.reduce(
       (acc, ticket) => acc + ticket.adultsQuantity,
@@ -119,7 +121,7 @@ export class TicketsService {
       kidsQuantity,
       page: page,
       limit: limit,
-      tickets: ticketsEntity,
+      tickets: ticketsOfEvent,
     };
   }
 
