@@ -97,14 +97,12 @@ export class TicketsService {
     const { page, limit } = paginationDto;
     
     const allTicketsOfEvent = await TicketModel.find({ event: eventID });
-    
+
     const ticketsOfEvent = await TicketModel.find({ event: eventID })
       .skip((page - 1) * limit)
       .limit(limit);
 
-    console.log(ticketsOfEvent)
-
-    // const ticketsEntity = ticketsOfEvent.map(TicketEntity.fromObject);
+    const ticketsEntity = ticketsOfEvent.map(TicketEntity.fromObject);
 
     const adultsQuantity = allTicketsOfEvent.reduce(
       (acc, ticket) => acc + ticket.adultsQuantity,
@@ -121,7 +119,7 @@ export class TicketsService {
       kidsQuantity,
       page: page,
       limit: limit,
-      tickets: ticketsOfEvent,
+      tickets: ticketsEntity,
     };
   }
 
@@ -218,4 +216,12 @@ export class TicketsService {
 
     return { msg: 'Los boletos han sido eliminados' };
   }
+
+  public async getTickets() {
+
+    const tickets = await TicketModel.find();
+    return tickets;
+
+  }
+
 }

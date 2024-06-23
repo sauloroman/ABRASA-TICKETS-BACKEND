@@ -112,4 +112,10 @@ export class TicketsController {
       .then((response) => res.status(200).json(response))
       .catch((error) => this.handleErrorResponse(error, res));
   };
+
+  public getAllTickets = (req: Request, res: Response) => {
+    this.ticketsService.getTickets()
+      .then((response) => res.status(200).json(response))
+      .catch((error) => this.handleErrorResponse(error, res));
+  }
 }

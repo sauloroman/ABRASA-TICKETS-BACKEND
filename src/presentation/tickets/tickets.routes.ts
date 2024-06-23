@@ -13,6 +13,8 @@ export class TicketsRoutes {
     const ticketsService = new TicketsService(fileUploadService);
     const ticketsController = new TicketsController(ticketsService);
 
+    router.get('/', ticketsController.getAllTickets )
+
     router.post(
       '/',
       [AuthMiddleware.validateJWT],
