@@ -13,7 +13,7 @@ export class TicketEntity {
     public isActive: boolean,
     public event: string,
     public user: string,
-    public table?: number,
+    public table: number,
   ){}
 
   public static fromObject( ticketObj: {[key: string]: any}): TicketEntity {

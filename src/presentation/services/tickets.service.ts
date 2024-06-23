@@ -95,9 +95,9 @@ export class TicketsService {
     }
 
     const { page, limit } = paginationDto;
-
+    
     const allTicketsOfEvent = await TicketModel.find({ event: eventID });
-
+    
     const ticketsOfEvent = await TicketModel.find({ event: eventID })
       .skip((page - 1) * limit)
       .limit(limit);
