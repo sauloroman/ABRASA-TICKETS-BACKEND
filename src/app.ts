@@ -1,7 +1,7 @@
 import { MongoDatabase } from './data/mongo-db/init';
 import { AppRouter } from './presentation/routes';
 import { Server } from './presentation/server';
-import { envs } from './config';
+import { envs } from './config'
 
 (async () => {
   await main();
