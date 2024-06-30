@@ -41,7 +41,11 @@ const EventSchema = new mongoose.Schema({
   
   image: {
     type: String,
-  }
+  },
+
+  invitation: {
+    type: String,
+  },
 
 });
 

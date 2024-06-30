@@ -11,6 +11,7 @@ export class EventEntity {
     public client?: string,
     public description?: string,
     public image?: string,
+    public invitation?: string,
   ){}
 
   public static fromObject( eventObj: {[key: string]: any}): EventEntity {
@@ -23,7 +24,8 @@ export class EventEntity {
       createdBy, 
       client = '',
       description = '', 
-      image = ''
+      image = '',
+      invitation = '',
     } = eventObj;
 
     if ( !id && !_id ) throw CustomError.badRequest('Missing id');
@@ -40,7 +42,8 @@ export class EventEntity {
       createdBy, 
       client, 
       description, 
-      image
+      image,
+      invitation,
     );
 
   }

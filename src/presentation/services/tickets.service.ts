@@ -29,7 +29,7 @@ export class TicketsService {
       throw CustomError.badRequest(`El número ${phone} ya esta registrado`);
     }
 
-    const keyPass = randomString.generateRandomString(5);
+    const keyPass = randomString.generateRandomString(4);
     const createTicketData = {
       ...createTicketDto,
       keyPass,
@@ -103,20 +103,18 @@ export class TicketsService {
       .limit(limit);
 
     const ticketsEntity = ticketsOfEvent.map(TicketEntity.fromObject);
-
-    const adultsQuantity = allTicketsOfEvent.reduce(
-      (acc, ticket) => acc + ticket.adultsQuantity,
-      0
-    );
-    const kidsQuantity = allTicketsOfEvent.reduce(
-      (acc, ticket) => acc + ticket.kidsQuantity,
-      0
-    );
+    const adultsQuantity = allTicketsOfEvent.reduce( (acc, ticket) => acc + ticket.adultsQuantity, 0);
+    const adultsCounter = allTicketsOfEvent.reduce( (acc, ticket) => acc + ticket.adultsCounter, 0);
+    const kidsQuantity = allTicketsOfEvent.reduce( (acc, ticket) => acc + ticket.kidsQuantity, 0);
+    const kidsCounter = allTicketsOfEvent.reduce( (acc, ticket) => acc + ticket.kidsCounter, 0);
+    
 
     return {
       total: allTicketsOfEvent.length,
       adultsQuantity,
+      adultsCounter,
       kidsQuantity,
+      kidsCounter,
       page: page,
       limit: limit,
       tickets: ticketsEntity,
@@ -172,27 +170,30 @@ export class TicketsService {
 
     const { adultsDiscount, kidsDiscount } = scanTicketDto;
 
+    const adults = Number( adultsDiscount );
+    const kids = Number( kidsDiscount );
+
     if (
-      ticketScanned.adultsQuantity === 0 &&
-      ticketScanned.kidsQuantity === 0
+      ticketScanned.adultsCounter === ticketScanned.adultsQuantity &&
+      ticketScanned.kidsCounter === ticketScanned.kidsQuantity
     ) {
       throw CustomError.badRequest('El boleto ya ha agotado sus entradas');
     }
 
-    if (adultsDiscount > ticketScanned.adultsQuantity) {
+    if ((ticketScanned.adultsCounter + adults) > ticketScanned.adultsQuantity) {
       throw CustomError.badRequest(
         'La cantidad de adultos a descontar es mayor que la cantidad registrada en base de datos'
       );
     }
 
-    if (kidsDiscount > ticketScanned.kidsQuantity) {
+    if ((ticketScanned.kidsCounter + kids) > ticketScanned.kidsQuantity) {
       throw CustomError.badRequest(
         'La cantidad de niños a descontar es mayor que la cantidad registrada en base de datos'
       );
     }
 
-    ticketScanned.adultsQuantity -= adultsDiscount;
-    ticketScanned.kidsQuantity -= kidsDiscount;
+    ticketScanned.adultsCounter += adults;
+    ticketScanned.kidsCounter += kids;
     await ticketScanned.save();
 
     const ticketEntity = TicketEntity.fromObject(ticketScanned);

@@ -17,6 +17,16 @@ const TicketSchema = new mongoose.Schema({
     required: [ true, 'Kids quantity is required'],
   },
 
+  adultsCounter: {
+    type: Number,
+    default: 0,
+  },
+
+  kidsCounter: {
+    type: Number,
+    default: 0,
+  },
+
   qrCode: {
     type: String,
   },
