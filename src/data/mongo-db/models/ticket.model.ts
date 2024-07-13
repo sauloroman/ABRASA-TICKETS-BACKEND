@@ -43,7 +43,8 @@ const TicketSchema = new mongoose.Schema({
   },
 
   table: {
-    type: Number,
+    type: String,
+    default: "Por asignar",
   },
 
   isActive: {

@@ -11,7 +11,7 @@ export class CreateTicketDto {
   public static create(obj: {
     [key: string]: any;
   }): [string?, CreateTicketDto?] {
-    const { name, event, phone, adultsQuantity = 0, kidsQuantity = 0, table = -1 } = obj;
+    const { name, event, phone, adultsQuantity = 0, kidsQuantity = 0, table = "Por Asignar" } = obj;
 
     if (!name) return ['Missing name ticket', undefined];
     if (!phone) return ['Missing phone ticket', undefined];
