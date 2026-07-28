@@ -3,6 +3,7 @@ import { AuthRouter } from './auth/auth.routes';
 import { ProfileRoutes } from './profile/profile.routes';
 import { EventsRoutes } from './events/events.routes';
 import { TicketsRoutes } from './tickets/tickets.routes';
+import { OpenConfirmationsRoutes } from './open-confirmations/open-confirmations.routes';
 
 export class AppRouter {
   public static get routes(): Router {
@@ -12,6 +13,7 @@ export class AppRouter {
     router.use('/api/profile', ProfileRoutes.routes);
     router.use('/api/events', EventsRoutes.routes);
     router.use('/api/tickets', TicketsRoutes.routes);
+    router.use('/api/open-confirmations', OpenConfirmationsRoutes.routes);
 
     return router;
   }

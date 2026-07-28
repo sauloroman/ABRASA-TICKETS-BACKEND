@@ -4,6 +4,7 @@ import { AuthController } from "./auth.controller";
 import { EmailService } from "../services/email.service";
 import { envs } from '../../config';
 import { AuthMiddleware } from "../middlewares/auth.middleware";
+import { RoleMiddleware } from "../middlewares/role.middleware";
 
 export class AuthRouter {
 
@@ -29,6 +30,8 @@ export class AuthRouter {
     
     router.post('/change-password-email', authController.changePasswordEmail );
     router.put('/change-password/:token', authController.changePassword );
+
+    router.get('/users', [AuthMiddleware.validateJWT, RoleMiddleware.isAdmin], authController.getAllUsers);
 
     return router;
   } 

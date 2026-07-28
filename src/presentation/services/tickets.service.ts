@@ -86,7 +86,8 @@ export class TicketsService {
 
   public async getTicketsByEvent(
     paginationDto: PaginationDto,
-    eventID: string
+    eventID: string,
+    name?: string
   ) {
     const eventExits = await EventModel.findById(eventID);
 
@@ -95,10 +96,22 @@ export class TicketsService {
     }
 
     const { page, limit } = paginationDto;
-    
-    const allTicketsOfEvent = await TicketModel.find({ event: eventID });
 
-    const ticketsOfEvent = await TicketModel.find({ event: eventID })
+    const queryFilter: any = { event: eventID };
+    if (name && name.trim() !== '') {
+      const cleanTerm = name.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const searchRegex = { $regex: cleanTerm, $options: 'i' };
+      queryFilter.$or = [
+        { name: searchRegex },
+        { phone: searchRegex },
+        { keyPass: searchRegex },
+        { table: searchRegex },
+      ];
+    }
+
+    const allTicketsOfEvent = await TicketModel.find(queryFilter);
+
+    const ticketsOfEvent = await TicketModel.find(queryFilter)
       .skip((page - 1) * limit)
       .limit(limit);
 

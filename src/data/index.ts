@@ -4,3 +4,4 @@ export * from './mongo-db/models/ticket.model';
 export * from './mongo-db/models/event.model';
 export * from './mongo-db/models/profile.model';
 export * from './mongo-db/models/confirmation.model';
+export * from './mongo-db/models/open-confirmation.model';

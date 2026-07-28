@@ -54,7 +54,7 @@ export class TicketsController {
 
   public getTicketsOfEvent = (req: Request, res: Response) => {
     const { id: eventID } = req.params;
-    const { page = 1, limit = 10 } = req.query;
+    const { page = 1, limit = 10, name } = req.query;
     const [errorMessage, paginationDto] = PaginationDto.create(+page, +limit);
 
     if (errorMessage) {
@@ -62,7 +62,7 @@ export class TicketsController {
     }
 
     this.ticketsService
-      .getTicketsByEvent(paginationDto!, eventID)
+      .getTicketsByEvent(paginationDto!, eventID, name as string)
       .then((response) => res.status(200).json(response))
       .catch((error) => this.handleErrorResponse(error, res));
   };

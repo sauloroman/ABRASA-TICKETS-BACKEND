@@ -12,11 +12,12 @@ export class UserEntity {
     public createdAt: Date,
     public isActive: boolean,
     public profile: string,
+    public role: string,
   ){}
 
   public static fromObject( userObj: {[ key: string ]: any} ): UserEntity {
 
-    const { id, _id, name, email, emailValidated, password, lastLogin, createdAt, isActive, profile } = userObj;
+    const { id, _id, name, email, emailValidated, password, lastLogin, createdAt, isActive, profile, role = 'Cliente' } = userObj;
 
     if ( !id && !_id ) throw CustomError.badRequest('Missing id'); 
     if ( !name ) throw CustomError.badRequest('Missing name');
@@ -28,7 +29,7 @@ export class UserEntity {
     if ( isActive === undefined ) throw CustomError.badRequest('Missing isActive');
     if ( !profile ) throw CustomError.badRequest('Missing profile');
 
-    return new UserEntity( id, name, email, emailValidated, password, lastLogin, createdAt, isActive, profile );
+    return new UserEntity( id, name, email, emailValidated, password, lastLogin, createdAt, isActive, profile, role );
 
   }
 

@@ -5,7 +5,7 @@ export class MongoMiddleware {
 
   public static isMongoId( req: Request, res: Response, next: NextFunction ) {
   
-    const { id } = req.params;
+    const id = req.params.id || req.params.eventId || Object.values(req.params)[0];
 
     const isMongoIdValid = mongoose.isValidObjectId( id );
 

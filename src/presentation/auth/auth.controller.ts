@@ -122,4 +122,10 @@ export class AuthController {
 
   }
 
+  public getAllUsers = ( req: Request, res: Response ) => {
+    this.authService.getAllUsers()
+      .then( users => res.status(200).json( users ) )
+      .catch( error => this.handleErrorResponse( error, res ) );
+  }
+
 }

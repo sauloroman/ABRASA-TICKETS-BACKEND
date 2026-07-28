@@ -53,6 +53,12 @@ const UserSchema = new mongoose.Schema({
     type: Schema.Types.ObjectId,
     ref: 'Profile',
     required: true,
+  },
+
+  role: {
+    type: String,
+    enum: ['Admin', 'Cliente'],
+    default: 'Cliente',
   }
 
 });

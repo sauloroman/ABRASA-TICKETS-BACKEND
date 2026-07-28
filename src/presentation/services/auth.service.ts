@@ -40,7 +40,7 @@ export class AuthService {
       const currentDate = new Date().toLocaleString();
 
       const userProfile = new ProfileModel();
-      const user = new UserModel({ ...registerUserDto });
+      const user = new UserModel({ ...registerUserDto, role: 'Cliente' });
 
       user.password = bcryptAdapter.hash(registerUserDto.password);
       user.activateKey = randomString.generateRandomNumberString(5);
@@ -132,6 +132,7 @@ export class AuthService {
           createdAt: today,
           emailValidated: true,
           activateKey: '',
+          role: 'Cliente',
         };
 
         const profile = new ProfileModel({ image: picture });
@@ -376,4 +377,19 @@ export class AuthService {
 
     return true;
   };
+
+  public async getAllUsers() {
+    try {
+      const users = await UserModel.find({});
+      return users.map(user => ({
+        id: user.id || user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role || 'Cliente',
+      }));
+    } catch (error) {
+      throw CustomError.internalServerError(`${error}`);
+    }
+  }
+
 }
