@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "This is the backend to create tickets and keep track of the guests",
   "main": "index.js",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "dev": "tsnd --respawn --clear src/app.ts",
     "build": "rimraf ./dist && tsc",
