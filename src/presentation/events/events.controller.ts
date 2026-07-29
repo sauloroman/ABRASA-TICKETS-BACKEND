@@ -40,6 +40,7 @@ export class EventsController {
 
     const { page = 1, limit = 6, category = 'todos' } = req.query;
     const { id: userID } = req.params;
+    const authUser = req.body.user;
 
     const [ errorMessage, paginationDto ] = PaginationDto.create( +page, +limit );
 
@@ -47,7 +48,7 @@ export class EventsController {
       return res.status(400).json({ error: errorMessage });
     }
 
-    this.eventsService.getEventsOfUser( userID, category as string, paginationDto! )
+    this.eventsService.getEventsOfUser( userID, category as string, paginationDto!, authUser )
       .then( response => res.status(200).json( response ) )
       .catch( error => this.handleError( error, res ) );
 

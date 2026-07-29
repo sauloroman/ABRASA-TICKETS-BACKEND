@@ -37,26 +37,26 @@ export class EventsService {
   public async getEventsOfUser(
     userID: string,
     category: string,
-    paginationDto: PaginationDto
+    paginationDto: PaginationDto,
+    authUser?: any
   ) {
     const { page, limit } = paginationDto;
 
-    let events: any = [];
+    const filter: any = {};
 
-    if (category === 'todos') {
-      events = await EventModel.find({ createdBy: userID })
-        .skip((page - 1) * limit)
-        .limit(limit);
-    } else {
-      events = await EventModel.find({
-        createdBy: userID,
-        $and: [{ eventType: category }],
-      })
-        .skip((page - 1) * limit)
-        .limit(limit);
+    if (authUser?.role !== 'Admin') {
+      filter.createdBy = userID;
     }
 
-    const total = await EventModel.find({ createdBy: userID });
+    if (category !== 'todos') {
+      filter.eventType = category;
+    }
+
+    const events = await EventModel.find(filter)
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    const total = await EventModel.find(filter);
 
     const userEvents = events.map(EventEntity.fromObject);
 
