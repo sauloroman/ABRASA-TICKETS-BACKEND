@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import puppeteer from 'puppeteer';
 import { EventModel, OpenConfirmationModel } from '../../data';
-import { CreateOpenConfirmationDto, PaginationDto } from '../../domain/dtos';
+import { CreateOpenConfirmationDto, PaginationDto, UpdateOpenConfirmationDto } from '../../domain/dtos';
 import { OpenConfirmationEntity } from '../../domain/entities';
 import { CustomError } from '../../domain/errors';
 import { generateConfirmationsHtmlTemplate } from '../templates/confirmations-pdf.template';
@@ -71,6 +71,22 @@ export class OpenConfirmationsService {
     return OpenConfirmationEntity.fromObject(openConfirmation);
   }
 
+  public async updateOpenConfirmationById(id: string, updateOpenConfirmationDto: UpdateOpenConfirmationDto) {
+    const openConfirmation = await OpenConfirmationModel.findById(id);
+
+    if (!openConfirmation) {
+      throw CustomError.notFound(`La confirmación abierta con ID ${id} no existe`);
+    }
+
+    const updatedConfirmation = await OpenConfirmationModel.findByIdAndUpdate(
+      id,
+      updateOpenConfirmationDto.values,
+      { new: true }
+    );
+
+    return OpenConfirmationEntity.fromObject(updatedConfirmation!);
+  }
+
   public async deleteOpenConfirmationById(id: string) {
     const openConfirmation = await OpenConfirmationModel.findByIdAndDelete(id);
 
@@ -80,6 +96,7 @@ export class OpenConfirmationsService {
 
     return { message: 'Confirmación eliminada correctamente' };
   }
+
 
   public async getConfirmationStats(eventId: string) {
     const eventExists = await EventModel.findById(eventId);

@@ -13,3 +13,5 @@ export * from './tickets/update-ticket';
 
 export * from './shared/pagination';
 export * from './open-confirmations/create-open-confirmation.dto';
+export * from './open-confirmations/update-open-confirmation.dto';
+

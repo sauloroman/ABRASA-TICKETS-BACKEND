@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
-import { CreateOpenConfirmationDto, PaginationDto } from '../../domain/dtos';
+import { CreateOpenConfirmationDto, PaginationDto, UpdateOpenConfirmationDto } from '../../domain/dtos';
 import { CustomError } from '../../domain/errors';
 import { OpenConfirmationsService } from '../services/open-confirmations.service';
+
 
 export class OpenConfirmationsController {
 
@@ -55,6 +56,20 @@ export class OpenConfirmationsController {
       .catch((error) => this.handleErrorResponse(error, res));
   };
 
+  public updateOpenConfirmation = (req: Request, res: Response) => {
+    const { id } = req.params;
+    const [errorMessage, updateOpenConfirmationDto] = UpdateOpenConfirmationDto.create(req.body);
+
+    if (errorMessage) {
+      return res.status(400).json({ error: errorMessage });
+    }
+
+    this.openConfirmationsService
+      .updateOpenConfirmationById(id, updateOpenConfirmationDto!)
+      .then((response) => res.status(200).json(response))
+      .catch((error) => this.handleErrorResponse(error, res));
+  };
+
   public deleteOpenConfirmation = (req: Request, res: Response) => {
     const { id } = req.params;
 
@@ -63,6 +78,7 @@ export class OpenConfirmationsController {
       .then((response) => res.status(200).json(response))
       .catch((error) => this.handleErrorResponse(error, res));
   };
+
 
   public getOpenConfirmationStats = (req: Request, res: Response) => {
     const eventId = req.params.eventId || req.params.id;

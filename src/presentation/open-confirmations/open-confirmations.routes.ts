@@ -19,8 +19,10 @@ export class OpenConfirmationsRoutes {
     router.get('/event/:eventId/export/pdf', [AuthMiddleware.validateJWT, MongoMiddleware.isMongoId, RoleMiddleware.checkAccess], controller.exportConfirmationsPdf);
     router.get('/event/:eventId', [AuthMiddleware.validateJWT, MongoMiddleware.isMongoId, RoleMiddleware.checkAccess], controller.getOpenConfirmationsByEvent);
     router.get('/:id', [AuthMiddleware.validateJWT, MongoMiddleware.isMongoId, RoleMiddleware.checkAccess], controller.getOpenConfirmationById);
-    router.delete('/:id', [AuthMiddleware.validateJWT, MongoMiddleware.isMongoId, RoleMiddleware.checkAccess], controller.deleteOpenConfirmation);
+    router.put('/:id', [AuthMiddleware.validateJWT, MongoMiddleware.isMongoId], controller.updateOpenConfirmation);
+    router.delete('/:id', [AuthMiddleware.validateJWT, MongoMiddleware.isMongoId], controller.deleteOpenConfirmation);
 
     return router;
   }
 }
+
