@@ -66,3 +66,8 @@ const TicketSchema = new mongoose.Schema({
 });
 
 export const TicketModel = mongoose.model('Ticket', TicketSchema);
+
+// Eliminar el índice único antiguo 'phone_1' si existe en la base de datos de MongoDB
+TicketModel.collection.dropIndex('phone_1').catch(() => {
+  // El índice ya fue eliminado o no existe en MongoDB
+});
