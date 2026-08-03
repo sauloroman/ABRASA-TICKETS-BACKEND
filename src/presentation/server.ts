@@ -1,3 +1,4 @@
+import path from 'path'
 import express, { Router } from 'express';
 import cors from 'cors';
 import fileUpload from 'express-fileupload';
@@ -14,9 +15,9 @@ export class Server {
   private serverListener?: any;
   private readonly port: number;
   private readonly router: Router;
-  private readonly publicPath: string; 
+  private readonly publicPath: string;
 
-  constructor( serverOptions: ServerOptions ) {
+  constructor(serverOptions: ServerOptions) {
     const { port, router, publicPath = 'public' } = serverOptions;
     this.port = port;
     this.router = router;
@@ -26,23 +27,24 @@ export class Server {
   public async start() {
 
     //* Middlewares
-    this.app.use( cors() );
-    this.app.use( express.json() );
-    this.app.use( express.urlencoded({ extended: true }));
-    this.app.use( fileUpload({
+    this.app.use(cors());
+    this.app.use(express.json());
+    this.app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
+    this.app.use(express.urlencoded({ extended: true }));
+    this.app.use(fileUpload({
       limits: { fileSize: 50 * 1024 * 1024 },
       useTempFiles: true,
       tempFileDir: '/tmp/',
     }))
 
     //* Public Folder
-    this.app.use( express.static( this.publicPath ) );
+    this.app.use(express.static(this.publicPath));
 
     //* Routes
-    this.app.use( this.router );
+    this.app.use(this.router);
 
-    this.serverListener = this.app.listen( this.port, () => {
-      console.log(`Server running in port ${ this.port }`);
+    this.serverListener = this.app.listen(this.port, () => {
+      console.log(`Server running in port ${this.port}`);
     });
 
   }

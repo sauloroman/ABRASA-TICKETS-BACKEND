@@ -2,17 +2,17 @@ import fs from 'fs';
 import path from 'path';
 import { UploadedFile } from "express-fileupload";
 import { CustomError } from "../../domain/errors";
-import { cloudImages, uuid } from '../../config'
+import { cloudImages, uuid, envs } from '../../config'
 
 export class FileUploadService {
 
-  private checkFolder( folderPath: string ) {
-    if ( !fs.existsSync( folderPath )) {
-      fs.mkdirSync( folderPath, { recursive: true } );
+  private checkFolder(folderPath: string) {
+    if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath, { recursive: true });
     }
   }
 
-  public async uploadFileServer (
+  public async uploadFileServer(
     file: UploadedFile | any,
     folder: string,
     validExtentions: string[] = ['png', 'jpg', 'jpeg', 'webp'],
@@ -22,15 +22,15 @@ export class FileUploadService {
 
       const fileExtention = file.mimetype.split('/')[1] ?? '';
 
-      if ( !validExtentions.includes( fileExtention ) ) {
+      if (!validExtentions.includes(fileExtention)) {
         throw CustomError.badRequest(`Invalid Extention: ${fileExtention}. Valid ones ${validExtentions} `);
-      } 
+      }
 
       const fileName = `${uuid.v4()}.${fileExtention}`;
 
-      const destination = path.join( __dirname, '../../', folder );
+      const destination = path.join(__dirname, '../../../uploads', folder);
 
-      this.checkFolder( destination );
+      this.checkFolder(destination);
 
       const filePath = `${destination}/${fileName}`;
 
@@ -40,11 +40,11 @@ export class FileUploadService {
 
     } catch (error) {
       console.log(`${error}`);
-      return null;   
+      return null;
     }
   }
 
-  public async uploadFileCloud (
+  public async uploadFileCloud(
     file: UploadedFile | any,
     folder: string,
     validExtentions: string[] = ['png', 'jpg', 'jpeg', 'webp'],
@@ -52,36 +52,51 @@ export class FileUploadService {
 
     const fileExtention = file.mimetype.split('/')[1] ?? '';
 
-    if ( !validExtentions.includes( fileExtention ) ) {
+    if (!validExtentions.includes(fileExtention)) {
       throw CustomError.badRequest(`Invalid Extention: ${fileExtention}. Valid ones ${validExtentions} `);
-    } 
+    }
 
     const { tempFilePath } = file;
 
-    const imageUrl = await cloudImages.getUrlImage( tempFilePath, folder ); 
+    const imageUrl = await cloudImages.getUrlImage(tempFilePath, folder);
 
     return imageUrl;
   }
 
-  public async destroyImageCloud ( filePath: string ) {
+  public async destroyImageCloud(filePath: string) {
 
-    const imageDestroyed = await cloudImages.destroyImage( filePath );
+    const imageDestroyed = await cloudImages.destroyImage(filePath);
 
-    if ( !imageDestroyed ) {
+    if (!imageDestroyed) {
       throw CustomError.internalServerError('Image was not deleted from cloud')
     }
 
     return true;
   }
 
-  public async uploadCode ( 
+  public async uploadCode(
     filePath: string | any,
     folder: string,
   ) {
 
-    const qrCodeUrl = await cloudImages.getUrlImage( filePath, folder );
+    if (envs.NODE_ENV === 'development') {
+      const fileName = path.basename(filePath)
+      const destination = path.join(__dirname, '../../../uploads', folder)
 
-    if ( !qrCodeUrl ) {
+      this.checkFolder(destination)
+
+      const destinationPath = path.join(destination, fileName)
+      fs.copyFileSync(filePath, destinationPath)
+
+      const cleanFolder = folder.startsWith('/') ? folder : '/' + folder
+      const localUrl = `${envs.WEBSERVICE_URL}/uploads${cleanFolder}/${fileName}`
+
+      return localUrl
+    }
+
+    const qrCodeUrl = await cloudImages.getUrlImage(filePath, folder);
+
+    if (!qrCodeUrl) {
       throw CustomError.internalServerError('Image was not uploaded');
     }
 

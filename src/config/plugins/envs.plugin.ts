@@ -2,6 +2,7 @@ import 'dotenv/config';
 import * as env from 'env-var';
 
 export const envs = {
+  NODE_ENV: env.get('NODE_ENV').default('development').asString(),
   PORT: env.get('PORT').required().asPortNumber(),
 
   MONGO_URL: env.get('MONGO_URL').required().asString(),

@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { cloudImages, qrCodeGenerator, randomString, uuid } from '../../config';
+import { cloudImages, qrCodeGenerator, randomString, uuid, envs } from '../../config';
 import { EventModel, TicketModel } from '../../data';
 import {
   CreateTicketDto,
@@ -149,6 +149,17 @@ export class TicketsService {
 
     if (!ticketDeleted) {
       throw CustomError.notFound(`El boleto con id ${ticketID} no existe`);
+    }
+
+    if (envs.NODE_ENV === 'development' || ticketDeleted.qrCode?.includes('/uploads/')) {
+      const fileName = ticketDeleted.qrCode?.split('/').at(-1)
+      const localPath = path.join(__dirname, '../../../uploads/abrasa/tickets', String(ticketDeleted.event), fileName || '')
+
+      if (fs.existsSync(localPath)) {
+        fs.unlinkSync(localPath)
+      }
+
+      return { msg: 'Boleto eliminado correctamente' }
     }
 
     const ticketIDtoDelete = ticketDeleted.qrCode
