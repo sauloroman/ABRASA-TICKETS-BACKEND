@@ -199,7 +199,7 @@ export class TicketsService {
     const ticketScanned = await TicketModel.findById(ticketID);
 
     if (!ticketScanned) {
-      throw CustomError.notFound(`El bolet con id ${ticketID} no existe`);
+      throw CustomError.notFound(`El boleto con id ${ticketID} no existe`);
     }
 
     const { adultsDiscount, kidsDiscount } = scanTicketDto;
