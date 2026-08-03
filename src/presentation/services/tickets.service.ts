@@ -21,7 +21,7 @@ export class TicketsService {
     let exists = true
 
     while (exists) {
-      keyPass = randomString.generateRandomString(5).replace(/[Ii1]/g, 'X')
+      keyPass = randomString.generateRandomString(5).replace(/[Ii1Oo0]/g, 'X')
       const existingTicket = await TicketModel.findOne({ keyPass })
       if (!existingTicket) {
         exists = false
@@ -259,41 +259,52 @@ export class TicketsService {
 
     const createdTickets = []
 
-    for (const item of tickets) {
-      const keyPass = await this.generateUniqueKePass()
+    for (let i = 0; i < tickets.length; i++) {
+      const item = tickets[i];
+      try {
+        const keyPass = await this.generateUniqueKePass()
 
-      const createTicketData = {
-        name: item.name,
-        phone: String(item.phone),
-        adultsQuantity: item.adultsQuantity ?? 0,
-        kidsQuantity: item.kidsQuantity ?? 0,
-        table: item.table ?? 'Por Asignar',
-        event,
-        keyPass,
-        user: userId,
-        qrCode: ''
+        const createTicketData = {
+          name: item.name,
+          phone: String(item.phone),
+          adultsQuantity: item.adultsQuantity ?? 0,
+          kidsQuantity: item.kidsQuantity ?? 0,
+          table: item.table ?? 'Por Asignar',
+          event,
+          keyPass,
+          user: userId,
+          qrCode: ''
+        }
+
+        const ticket = new TicketModel({ ...createTicketData })
+
+        const nameQrCode = uuid.v4() + '.png'
+
+        const contentQrCode = {
+          id: ticket.id,
+          ticketName: ticket.name,
+        }
+
+        const qrCode = await qrCodeGenerator.generateQrCode(contentQrCode, nameQrCode)
+
+        const qrCodeUrl = await this.fileUploadService.uploadCode(qrCode, `/abrasa/tickets/${event}`)
+
+        ticket.qrCode = qrCodeUrl
+
+        await ticket.save()
+
+        const tempFilePath = path.join(__dirname, '../../../', nameQrCode);
+        if (fs.existsSync(tempFilePath)) {
+          fs.unlinkSync(tempFilePath);
+        }
+
+        createdTickets.push(TicketEntity.fromObject(ticket))
+      } catch (error: any) {
+        console.error(`Error al procesar boleto #${i + 1} (${item.name}):`, error);
+        throw CustomError.internalServerError(
+          `Error en el boleto #${i + 1} (${item.name}): ${error.message || error}`
+        );
       }
-
-      const ticket = new TicketModel({ ...createTicketData })
-
-      const nameQrCode = uuid.v4() + '.png'
-
-      const contentQrCode = {
-        id: ticket.id,
-        nameQrCode: nameQrCode,
-      }
-
-      const qrCode = await qrCodeGenerator.generateQrCode(contentQrCode, nameQrCode)
-
-      const qrCodeUrl = await this.fileUploadService.uploadCode(qrCode, `/abrasa/tickets/${event}`)
-
-      ticket.qrCode = qrCodeUrl
-
-      await ticket.save()
-
-      fs.unlinkSync(path.join(__dirname, '../../../', nameQrCode))
-
-      createdTickets.push(TicketEntity.fromObject(ticket))
     }
 
     return {

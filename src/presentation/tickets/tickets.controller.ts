@@ -18,7 +18,8 @@ export class TicketsController {
     }
 
     console.log(error);
-    return res.status(500).json({ error: 'Internal server error' });
+    const message = error instanceof Error ? error.message : 'Internal server error';
+    return res.status(500).json({ error: message });
   };
 
   public getTicketById = (req: Request, res: Response) => {
