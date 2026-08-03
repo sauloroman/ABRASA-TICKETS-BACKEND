@@ -49,6 +49,8 @@
     "pdfkit": "^0.19.1",
     "puppeteer": "^25.4.0",
     "qrcode": "^1.5.3",
+    "rimraf": "^5.0.7",
+    "typescript": "^5.4.2",
     "uuid": "^9.0.1"
   }
 }
