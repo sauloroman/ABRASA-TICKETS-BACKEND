@@ -10,8 +10,8 @@ export * from './events/update-event';
 
 export * from './tickets/create-ticket';
 export * from './tickets/update-ticket';
+export * from './tickets/create-bulk-tickets';
 
 export * from './shared/pagination';
 export * from './open-confirmations/create-open-confirmation.dto';
 export * from './open-confirmations/update-open-confirmation.dto';
-

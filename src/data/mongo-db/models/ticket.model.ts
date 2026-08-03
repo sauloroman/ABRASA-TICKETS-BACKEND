@@ -14,7 +14,7 @@ const TicketSchema = new mongoose.Schema({
 
   kidsQuantity: {
     type: Number,
-    required: [ true, 'Kids quantity is required'],
+    required: [true, 'Kids quantity is required'],
   },
 
   adultsCounter: {
@@ -33,13 +33,12 @@ const TicketSchema = new mongoose.Schema({
 
   phone: {
     type: String,
-    required: [ true, 'Ticket Phone is required'],
-    unique: true,
+    required: [true, 'Ticket Phone is required'],
   },
 
   keyPass: {
     type: String,
-    required: [ true, 'Key Pass required'],
+    required: [true, 'Key Pass required'],
   },
 
   table: {
@@ -51,7 +50,7 @@ const TicketSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
-  
+
   event: {
     type: Schema.Types.ObjectId,
     ref: 'Event',
@@ -66,4 +65,4 @@ const TicketSchema = new mongoose.Schema({
 
 });
 
-export const TicketModel = mongoose.model('Ticket', TicketSchema );
+export const TicketModel = mongoose.model('Ticket', TicketSchema);

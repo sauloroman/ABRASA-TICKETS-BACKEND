@@ -6,6 +6,7 @@ import {
   CreateTicketDto,
   PaginationDto,
   UpdateTicketDto,
+  CreateBulkTicketDto
 } from '../../domain/dtos';
 import { TicketEntity } from '../../domain/entities/ticket.entity';
 import { CustomError } from '../../domain/errors';
@@ -13,7 +14,21 @@ import { FileUploadService } from './file-upload.service';
 import { ScanTicketDto } from '../../domain/dtos/tickets/scan-ticket';
 
 export class TicketsService {
-  constructor(private readonly fileUploadService: FileUploadService) {}
+  constructor(private readonly fileUploadService: FileUploadService) { }
+
+  private async generateUniqueKePass(): Promise<string> {
+    let keyPass = ''
+    let exists = true
+
+    while (exists) {
+      keyPass = randomString.generateRandomString(5).replace(/[Ii1]/g, 'X')
+      const existingTicket = await TicketModel.findOne({ keyPass })
+      if (!existingTicket) {
+        exists = false
+      }
+    }
+    return keyPass
+  }
 
   public async postTicket(createTicketDto: CreateTicketDto, userID: string) {
     const { event, phone } = createTicketDto;
@@ -23,13 +38,8 @@ export class TicketsService {
       throw CustomError.notFound(`Evento con id ${event} no existe`);
     }
 
-    const ticketPhoneExist = await TicketModel.findOne({ phone });
+    const keyPass = await this.generateUniqueKePass();
 
-    if (ticketPhoneExist) {
-      throw CustomError.badRequest(`El número ${phone} ya esta registrado`);
-    }
-
-    const keyPass = randomString.generateRandomString(4);
     const createTicketData = {
       ...createTicketDto,
       keyPass,
@@ -116,11 +126,11 @@ export class TicketsService {
       .limit(limit);
 
     const ticketsEntity = ticketsOfEvent.map(TicketEntity.fromObject);
-    const adultsQuantity = allTicketsOfEvent.reduce( (acc, ticket) => acc + ticket.adultsQuantity, 0);
-    const adultsCounter = allTicketsOfEvent.reduce( (acc, ticket) => acc + ticket.adultsCounter, 0);
-    const kidsQuantity = allTicketsOfEvent.reduce( (acc, ticket) => acc + ticket.kidsQuantity, 0);
-    const kidsCounter = allTicketsOfEvent.reduce( (acc, ticket) => acc + ticket.kidsCounter, 0);
-    
+    const adultsQuantity = allTicketsOfEvent.reduce((acc, ticket) => acc + ticket.adultsQuantity, 0);
+    const adultsCounter = allTicketsOfEvent.reduce((acc, ticket) => acc + ticket.adultsCounter, 0);
+    const kidsQuantity = allTicketsOfEvent.reduce((acc, ticket) => acc + ticket.kidsQuantity, 0);
+    const kidsCounter = allTicketsOfEvent.reduce((acc, ticket) => acc + ticket.kidsCounter, 0);
+
 
     return {
       total: allTicketsOfEvent.length,
@@ -183,8 +193,8 @@ export class TicketsService {
 
     const { adultsDiscount, kidsDiscount } = scanTicketDto;
 
-    const adults = Number( adultsDiscount );
-    const kids = Number( kidsDiscount );
+    const adults = Number(adultsDiscount);
+    const kids = Number(kidsDiscount);
 
     if (
       ticketScanned.adultsCounter === ticketScanned.adultsQuantity &&
@@ -236,6 +246,60 @@ export class TicketsService {
     const tickets = await TicketModel.find();
     return tickets;
 
+  }
+
+  public async postBulkTickets(createBulkTicketDto: CreateBulkTicketDto, userId: string) {
+    const { event, tickets } = createBulkTicketDto
+
+    const eventExists = await EventModel.findById(event)
+
+    if (!eventExists) {
+      throw CustomError.notFound(`Evento con id ${event} no existe`);
+    }
+
+    const createdTickets = []
+
+    for (const item of tickets) {
+      const keyPass = await this.generateUniqueKePass()
+
+      const createTicketData = {
+        name: item.name,
+        phone: String(item.phone),
+        adultsQuantity: item.adultsQuantity ?? 0,
+        kidsQuantity: item.kidsQuantity ?? 0,
+        table: item.table ?? 'Por Asignar',
+        event,
+        keyPass,
+        user: userId,
+        qrCode: ''
+      }
+
+      const ticket = new TicketModel({ ...createTicketData })
+
+      const nameQrCode = uuid.v4() + '.png'
+
+      const contentQrCode = {
+        id: ticket.id,
+        nameQrCode: nameQrCode,
+      }
+
+      const qrCode = await qrCodeGenerator.generateQrCode(contentQrCode, nameQrCode)
+
+      const qrCodeUrl = await this.fileUploadService.uploadCode(qrCode, `/abrasa/tickets/${event}`)
+
+      ticket.qrCode = qrCodeUrl
+
+      await ticket.save()
+
+      fs.unlinkSync(path.join(__dirname, '../../../', nameQrCode))
+
+      createdTickets.push(TicketEntity.fromObject(ticket))
+    }
+
+    return {
+      msg: `${createdTickets.length} boletos creados exitosamente`,
+      tickets: createdTickets
+    }
   }
 
 }

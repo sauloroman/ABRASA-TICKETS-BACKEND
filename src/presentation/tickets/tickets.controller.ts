@@ -3,13 +3,14 @@ import {
   CreateTicketDto,
   PaginationDto,
   UpdateTicketDto,
+  CreateBulkTicketDto
 } from '../../domain/dtos';
 import { CustomError } from '../../domain/errors';
 import { TicketsService } from '../services/tickets.service';
 import { ScanTicketDto } from '../../domain/dtos/tickets/scan-ticket';
 
 export class TicketsController {
-  constructor(private readonly ticketsService: TicketsService) {}
+  constructor(private readonly ticketsService: TicketsService) { }
 
   private handleErrorResponse = (error: unknown, res: Response) => {
     if (error instanceof CustomError) {
@@ -117,5 +118,20 @@ export class TicketsController {
     this.ticketsService.getTickets()
       .then((response) => res.status(200).json(response))
       .catch((error) => this.handleErrorResponse(error, res));
+  }
+
+  public createBulkTickets = (req: Request, res: Response) => {
+    const { id: userId } = req.body.user
+
+    const [errorMessage, createBulkTicketDto] = CreateBulkTicketDto.create(req.body)
+
+    if (errorMessage) {
+      return res.status(400).json({ error: errorMessage })
+    }
+
+    this.ticketsService
+      .postBulkTickets(createBulkTicketDto!, userId)
+      .then((response) => res.status(201).json(response))
+      .catch((error) => this.handleErrorResponse(error, res))
   }
 }

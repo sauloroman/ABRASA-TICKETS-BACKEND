@@ -14,7 +14,7 @@ export class TicketsRoutes {
     const ticketsService = new TicketsService(fileUploadService);
     const ticketsController = new TicketsController(ticketsService);
 
-    router.get('/', [AuthMiddleware.validateJWT, RoleMiddleware.checkAccess], ticketsController.getAllTickets )
+    router.get('/', [AuthMiddleware.validateJWT, RoleMiddleware.checkAccess], ticketsController.getAllTickets)
 
     router.post(
       '/',
@@ -52,6 +52,11 @@ export class TicketsRoutes {
       [AuthMiddleware.validateJWT, MongoMiddleware.isMongoId, RoleMiddleware.checkAccess],
       ticketsController.deleteAllTicketsEvent
     );
+    router.post(
+      '/bulk',
+      [AuthMiddleware.validateJWT, RoleMiddleware.isAdmin],
+      ticketsController.createBulkTickets
+    )
 
     return router;
   }
