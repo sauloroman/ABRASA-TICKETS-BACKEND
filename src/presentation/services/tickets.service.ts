@@ -241,13 +241,19 @@ export class TicketsService {
   public async deleteTicketsOfEvent(eventID: string) {
     const ticketsOfEvent = await TicketModel.find({ event: eventID });
 
-    if (!ticketsOfEvent) {
-      throw CustomError.notFound(`El evento con id ${eventID} no existe`);
+    if (ticketsOfEvent.length === 0) {
+      throw CustomError.notFound(`El evento con id ${eventID} no tiene boletos registrados`);
     }
 
-    ticketsOfEvent.forEach(async (ticket) => {
-      await this.deleteTicketById(ticket._id);
-    });
+    await Promise.allSettled(
+      ticketsOfEvent.map(async (ticket) => {
+        try {
+          await this.deleteTicketById(ticket._id);
+        } catch (error) {
+          console.error(`Error deleting ticket ${ticket._id}:`, error);
+        }
+      })
+    );
 
     return { msg: 'Los boletos han sido eliminados' };
   }

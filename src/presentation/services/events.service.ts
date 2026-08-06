@@ -8,9 +8,9 @@ import {
   UpdateEventDto,
 } from '../../domain/dtos';
 import { EventEntity } from '../../domain/entities';
-import { CustomError } from '../../domain/errors';
 import { FileUploadService } from './file-upload.service';
-import { cloudImages } from '../../config';
+import { CustomError } from '../../domain/errors';
+import { cloudImages, envs } from '../../config';
 
 export class EventsService {
   constructor(private readonly fileUploadService: FileUploadService) {}
@@ -77,31 +77,46 @@ export class EventsService {
       throw CustomError.notFound(`Event with id ${eventID} does not exist`);
     }
 
-    if (eventDeleted.image) {
-      const imageID = eventDeleted.image?.split('/').at(-1)?.split('.')[0];
-      const filePathToDelete = `abrasa/events/${eventID}/${imageID}`;
+    if (envs.NODE_ENV === 'development' || eventDeleted.image?.includes('/uploads/')) {
+      const localEventFolder = path.join(__dirname, '../../../uploads/abrasa/events', eventID);
+      const localTicketsFolder = path.join(__dirname, '../../../uploads/abrasa/tickets', eventID);
 
-      const imageWasDeleted = await cloudImages.destroyImage(filePathToDelete);
+      if (fs.existsSync(localEventFolder)) {
+        fs.rmSync(localEventFolder, { recursive: true, force: true });
+      }
+      if (fs.existsSync(localTicketsFolder)) {
+        fs.rmSync(localTicketsFolder, { recursive: true, force: true });
+      }
+    } else {
+      if (eventDeleted.image) {
+        const imageID = eventDeleted.image?.split('/').at(-1)?.split('.')[0];
+        const filePathToDelete = `abrasa/events/${eventID}/${imageID}`;
 
-      if (!imageWasDeleted) {
-        throw CustomError.internalServerError(
-          `Image of event ${eventID} was not deleted`
-        );
+        const imageWasDeleted = await cloudImages.destroyImage(filePathToDelete);
+
+        if (!imageWasDeleted) {
+          throw CustomError.internalServerError(
+            `Image of event ${eventID} was not deleted`
+          );
+        }
+
+        await cloudImages.deleteFolder(`abrasa/events/${eventID}`);
       }
 
-      await cloudImages.deleteFolder(`abrasa/events/${eventID}`);
+      const ticketsOfEvent = await TicketModel.find({ event: eventID });
+
+      await Promise.allSettled(
+        ticketsOfEvent.map(async ({ qrCode }) => {
+          if (!qrCode) return;
+          const qrCodeId = qrCode.split('/').at(-1)?.split('.')[0];
+          const qrCodePath = `abrasa/tickets/${eventID}/${qrCodeId}`;
+          await cloudImages.destroyImage(qrCodePath);
+        })
+      );
+
+      await cloudImages.deleteFolder(`abrasa/tickets/${eventID}`);
     }
 
-    const ticketsOfEvent = await TicketModel.find({ event: eventID });
-
-    // ELIMINAR IMAGENES DE CLOUDINARY
-    ticketsOfEvent.forEach(async ({ qrCode }) => {
-      const qrCodeId = qrCode?.split('/').at(-1)?.split('.')[0];
-      const qrCodePath = `abrasa/tickets/${eventID}/${qrCodeId}`;
-      await cloudImages.destroyImage(qrCodePath);
-    });
-
-    await cloudImages.deleteFolder(`abrasa/tickets/${eventID}`);
     await TicketModel.deleteMany({ event: eventID });
 
     return { msg: 'Evento eliminado exitosamente' };
