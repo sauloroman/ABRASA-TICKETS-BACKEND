@@ -29,9 +29,7 @@
     "@types/nodemailer": "^6.4.14",
     "@types/qrcode": "^1.5.5",
     "@types/uuid": "^9.0.8",
-    "rimraf": "^5.0.7",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.4.2"
+    "ts-node-dev": "^2.0.0"
   },
   "dependencies": {
     "@types/pdfkit": "^0.17.6",
