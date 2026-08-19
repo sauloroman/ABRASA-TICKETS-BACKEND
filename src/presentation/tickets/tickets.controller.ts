@@ -135,4 +135,23 @@ export class TicketsController {
       .then((response) => res.status(201).json(response))
       .catch((error) => this.handleErrorResponse(error, res))
   }
+
+  public sendWhatsAppTicket = (req: Request, res: Response) => {
+    const { id: ticketId } = req.params
+
+    this.ticketsService
+      .sendWhatsAppTicket(ticketId)
+      .then(response => res.status(200).json(response))
+      .catch(error => this.handleErrorResponse(error, res))
+  }
+
+  public sendBulkWhatsAppTicketsOfEvent = (req: Request, res: Response) => {
+    const { id: eventID } = req.params
+
+    this.ticketsService
+      .sendBulkWhatsAppTicketsOfEvent(eventID)
+      .then(response => res.status(200).json(response))
+      .catch(error => this.handleErrorResponse(error, res))
+  }
+
 }

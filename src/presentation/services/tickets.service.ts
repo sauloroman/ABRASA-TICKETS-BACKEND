@@ -12,9 +12,14 @@ import { TicketEntity } from '../../domain/entities/ticket.entity';
 import { CustomError } from '../../domain/errors';
 import { FileUploadService } from './file-upload.service';
 import { ScanTicketDto } from '../../domain/dtos/tickets/scan-ticket';
+import { WhatsAppService } from './whatsapp.service';
 
 export class TicketsService {
-  constructor(private readonly fileUploadService: FileUploadService) { }
+
+  constructor(
+    private readonly fileUploadService: FileUploadService,
+    private readonly whatsAppService: WhatsAppService
+  ) { }
 
   private async generateUniqueKePass(): Promise<string> {
     let keyPass = ''
@@ -328,6 +333,69 @@ export class TicketsService {
       msg: `${createdTickets.length} boletos creados exitosamente`,
       tickets: createdTickets
     }
+  }
+
+  public async sendWhatsAppTicket(ticketId: string) {
+
+    const ticket = await TicketModel.findById(ticketId).populate('event');
+
+    if (!ticket) {
+      throw CustomError.notFound(`El boleto con id ${ticketId} no existe`)
+    }
+
+    const event = ticket.event as any;
+
+    if (!event) {
+      throw CustomError.notFound('El evento asociado al boleto no existe')
+    }
+
+    const result = await this.whatsAppService.sendTicketMessage({
+      phone: ticket.phone,
+      guestName: ticket.name,
+      clientName: event.client || 'Atelier Eventos',
+      eventDate: event.eventDate || 'Próximamente',
+      invitationUrl: event.invitation || 'N/A',
+      keyPass: ticket.keyPass
+    })
+
+    return {
+      msg: 'Boleto enviado por WhatsApp exitosamente',
+      ...result
+    }
+
+  }
+
+  public async sendBulkWhatsAppTicketsOfEvent(eventId: string) {
+
+    const event = await EventModel.findById(eventId)
+
+    if (!event) {
+      throw CustomError.notFound(`El evento con id ${eventId} no existe`)
+    }
+
+    const tickets = await TicketModel.find({ event: eventId })
+
+    if (tickets.length === 0) {
+      throw CustomError.notFound('El evento no tiene boletos registrados para enviar')
+    }
+
+    const items = tickets.map(ticket => ({
+      ticketId: String(ticket._id),
+      phone: ticket.phone,
+      guestName: ticket.name,
+      clientName: event.client || 'Atelier Eventos',
+      eventDate: event.eventDate || 'Próximamente',
+      invitationUrl: event.invitation || 'N/A',
+      keyPass: ticket.keyPass
+    }))
+
+    const result = await this.whatsAppService.sendBulkTickets(items)
+
+    return {
+      msg: `Proceso de envío masivo finalizado: ${result.sent} enviados, ${result.failed} fallidos`,
+      ...result
+    }
+
   }
 
 }

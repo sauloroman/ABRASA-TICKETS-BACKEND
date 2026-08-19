@@ -23,4 +23,11 @@ export const envs = {
   GOOGLE_SECRET_ID: env.get('GOOGLE_SECRET_ID').required().asString(),
 
   CLOUDINARY_URL: env.get('CLOUDINARY_URL').required().asString(),
+
+  WHATSAPP_PHONE_NUMBER_ID: env.get('WHATSAPP_PHONE_NUMBER_ID').required().asString(),
+  WHATSAPP_BUSINESS_ACCOUNT_ID: env.get('WHATSAPP_BUSINESS_ACCOUNT_ID').required().asString(),
+  WHATSAPP_ACCESS_TOKEN: env.get('WHATSAPP_ACCESS_TOKEN').required().asString(),
+  WHATSAPP_CLOUD_API_URL: env.get('WHATSAPP_CLOUD_API_URL').required().asString(),
+  WHATSAPP_TEMPLATE_NAME: env.get('WHATSAPP_TEMPLATE_NAME').required().asString(),
+  WHATSAPP_LANG_CODE: env.get('WHATSAPP_LANG_CODE').required().asString(),
 };
