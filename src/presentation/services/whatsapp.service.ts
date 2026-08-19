@@ -82,6 +82,8 @@ export class WhatsAppService {
 
             const data = await response.json();
 
+            console.log('--- META API RESPONSE ---', JSON.stringify(data, null, 2));
+
             if (!response.ok) {
                 console.error('Error de WhatsApp Cloud API:', data)
                 const errorMsg = data?.error?.message || 'Error al enviar mensaje por WhatsApp'
